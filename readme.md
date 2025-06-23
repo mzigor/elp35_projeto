@@ -83,3 +83,8 @@ struct queue
 
 struct queue *voo;
 ```
+
+
+## Recursos
+
+Uma [lista de aviões comerciais](https://en.wikipedia.org/wiki/List_of_commercial_jet_airliners), com o número de aviões ainda em uso.
