@@ -30,12 +30,12 @@ esquecer de remover também a lista de passageiros;
 6. Listar o número de aviões aguardando na fila de decolagem;
 
 7. Listar os dados de todos os aviões na fila de espera (um em cada linha da 
-tela, exceto a lista de passageiros),conforme modelo;
+tela, exceto a lista de passageiros), conforme modelo;
 
 8. Listar na tela os passageiros de um determinado voo em ordem alfabética e 
 informar no final a quantidade de passageiros no voo;
 
-9. Sair do programa (liberar a lista de Passageiros e voos antes de finalizar).
+9. Sair do programa (liberar a lista de passageiros e voos antes de finalizar).
 
 
 ## Modelo para printout da lista de espera

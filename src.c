@@ -24,8 +24,8 @@
 struct btree
 {
     char p_name[40];
-    struct tree *p_l;
-    struct tree *p_r;
+    struct btree *p_l;
+    struct btree *p_r;
 };
 
 struct btree *bt_cr_leaf(char *p_name_new)
@@ -40,7 +40,30 @@ struct btree *bt_cr_leaf(char *p_name_new)
     return p_new;
 }
 
-
+int bt_rec_insert(struct btree **p_root, char *p_name_new)
+{
+    // First node ever
+    if (*p_root == NULL)
+    {
+        *p_root = bt_cr_leaf(p_name_new);
+        return 0;
+    }
+    // Recursive insert to LEFT if new name comes BEFORE name in root
+    else if (strcmp((*p_root)->p_name, p_name_new) > 0)
+    {
+        return bt_rec_insert(&((*p_root)->p_l), p_name_new);
+    }
+    // Recursive insert to RIGHT if new name comes AFTER name in root
+    else if (strcmp((*p_root)->p_name, p_name_new) < 0)
+    {
+        return bt_rec_insert(&((*p_root)->p_r), p_name_new);
+    }
+    else
+    {
+        printf("Nome ja inserido\n");
+        return 1;
+    }
+}
 
 struct node
 {
@@ -62,6 +85,7 @@ struct queue
 
 int main(void)
 {
+    printf("Inicio do teste\n");
     struct node teste;
 
     teste.p_nxt = NULL;
@@ -72,6 +96,13 @@ int main(void)
     strcpy(teste.p_mdl, "Boeing 737-7K5");
     teste.nst = 138;
     teste.p_pl = NULL;
+
+    char n1[] = "Igor";
+    char n2[] = "Marina";
+
+    bt_rec_insert(&(teste.p_pl), n1);
+    bt_rec_insert(&(teste.p_pl), n2);
+    bt_rec_insert(&(teste.p_pl), n1);
 
     return 0;
 }
