@@ -1,27 +1,39 @@
 # Log de desenvolvimento
 
+## Checklist básico
+
 Preciso desenvolver as seguintes funcionalidades:
 
-- [ ] Cadastrar voos na fila de espera;
+- [x] 2025-06-28 15:52 | 1 Cadastrar voos na fila de espera;
 
-- [ ] Cadastrar nomes na lista de passageiros de um voo (o usuário deve informar 
+- [ ] 2 Cadastrar nomes na lista de passageiros de um voo (o usuário deve informar 
 o  ID do voo desejado);
 
-- [ ] Remover nomes da lista de passageiros de um voo (o usuário deve informar o 
+- [ ] 3 Remover nomes da lista de passageiros de um voo (o usuário deve informar o 
 ID do voo e nome desejado);
 
-- [ ] Listar todas as características do primeiro avião da fila (exceto a lista 
+- [ ] 4 Listar todas as características do primeiro avião da fila (exceto a lista 
 de passageiros);
 
-- [ ] Autorizar a decolagem do primeiro avião da fila (removendo-o da fila). Não 
+- [ ] 5 Autorizar a decolagem do primeiro avião da fila (removendo-o da fila). Não 
 esquecer de remover também a lista de passageiros;
 
-- [ ] Listar o número de aviões aguardando na fila de decolagem;
+- [ ] 6 Listar o número de aviões aguardando na fila de decolagem;
 
-- [ ] Listar os dados de todos os aviões na fila de espera (um em cada linha da 
+- [ ] 7 Listar os dados de todos os aviões na fila de espera (um em cada linha da 
 tela, exceto a lista de passageiros), conforme modelo;
 
-- [ ] Listar na tela os passageiros de um determinado voo em ordem alfabética e 
+- [ ] 8 Listar na tela os passageiros de um determinado voo em ordem alfabética e 
 informar no final a quantidade de passageiros no voo;
 
-- [ ] Sair do programa (liberar a lista de passageiros e voos antes de finalizar).
+- [ ] 9 Sair do programa (liberar a lista de passageiros e voos antes de finalizar).
+
+
+## Melhorias
+
+### Item 1 `Cadastrar voos…`
+
+- [ ] Ter checagem automática da validade do input
+- [ ] Oferecer opções fixas para compania, modelo, destino do voo
+- [ ] Atribuir número de registro com base na compania
+- [ ] Atribuir número de assentos com base no modelo do avião
