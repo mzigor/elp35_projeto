@@ -43,6 +43,11 @@ char *
 io_str_input(){
     int input_size = 100;
     char *p_input = (char *)malloc(input_size);
+    if (p_input == NULL)
+    {
+        printf("\nSem memoria\n");
+        exit(1);
+    }
 
     fgets(p_input, input_size, stdin);
 
@@ -86,20 +91,23 @@ io_menu(void)
 }
 
 // Checks if menu choice is valid (0 if valid, 1 if not)
-int io_menu_valid(char * p_in)
+int io_menu_valid(char *p_in)
 {
-    if (   strcmp(p_in, "a") == 0
-        || strcmp(p_in, "b") == 0
-        || strcmp(p_in, "c") == 0 
-        || strcmp(p_in, "d") == 0
-        || strcmp(p_in, "e") == 0 
-        || strcmp(p_in, "f") == 0
-        || strcmp(p_in, "g") == 0 
-        || strcmp(p_in, "h") == 0
-        || strcmp(p_in, "q") == 0
-    ) {return 0;}
+    if (   
+        strcmp(p_in, "a") == 0
+     || strcmp(p_in, "b") == 0
+     || strcmp(p_in, "c") == 0 
+     || strcmp(p_in, "d") == 0
+     || strcmp(p_in, "e") == 0 
+     || strcmp(p_in, "f") == 0
+     || strcmp(p_in, "g") == 0 
+     || strcmp(p_in, "h") == 0
+     || strcmp(p_in, "q") == 0
+    )
+    {return 0;}
     
-    else {return 1;}
+    else
+    {return 1;}
 }
 
 // Binary tree functions--------------------------------------------------------
@@ -209,29 +217,29 @@ qu_cr_node()
 }
 
 void
-qu_fill_node(struct node * p_nd)
+qu_fill_node(struct node *p_nd)
 {
     printf("Qual o ID do voo?\n> ");
     char *pid = io_str_input();
     strcpy(p_nd->p_pid, pid);
     free(pid);
 
-    printf("Qual o destino do voo?\n>");
+    printf("Qual o destino do voo?\n> ");
     char *dst = io_str_input();
     strcpy(p_nd->p_dst, dst);
     free(dst);
 
-    printf("Qual a empresa do voo?\n>");
+    printf("Qual a empresa do voo?\n> ");
     char *cmp = io_str_input();
     strcpy(p_nd->p_cmp, cmp);
     free(cmp);
 
-    printf("Qual o registro do voo?\n>");
+    printf("Qual o registro do voo?\n> ");
     char *reg = io_str_input();
     strcpy(p_nd->p_reg, reg);
     free(reg);
 
-    printf("Qual o modelo do voo?\n>");
+    printf("Qual o modelo do voo?\n> ");
     char *mdl = io_str_input();
     strcpy(p_nd->p_mdl, mdl);
     free(mdl);
@@ -260,7 +268,7 @@ qu_cr_queue()
 
 // Adds a new flight to the queue
 void
-qu_new_flight(struct queue * qu)
+qu_new_flight(struct queue *qu)
 {
     printf("Registrando novo voo\n\n");
     struct node * p_nf = qu_cr_node();
@@ -277,6 +285,107 @@ qu_new_flight(struct queue * qu)
         qu->p_t = p_nf;
     }
 }
+
+// Aligned print, ensuring aligned spaces and a final character at the end
+void
+qu_print_align(int n, char *p_s, char *p_f)
+{
+    int p_s_chars = strlen(p_s);
+    if (p_s_chars > n)
+    {
+        printf("\nErro de alinhamento\n");
+        return;
+    }
+
+    int p_s_lacks = (n - p_s_chars);
+    
+    printf("%s", p_s);
+    
+    if (p_s_lacks > 0)
+    {
+        for (int m = p_s_lacks; m > 1; --m)
+        {
+            printf(" ");
+        }
+    }
+
+    printf("%s", p_f);
+    return;
+}
+
+// Flight list printout header
+void
+qu_print_header(void)
+{
+    qu_print_align(10, "ID do voo", "; ");
+    qu_print_align(8,  "Destino",   "; ");
+    qu_print_align(20, "Empresa",   "; ");
+    qu_print_align(9,  "Registro",  "; ");
+    qu_print_align(20, "Modelo",    "; ");
+    qu_print_align(9,  "Assentos",  "\n");
+    return;
+}
+
+void
+qu_print_f_flight(struct node *p_nd)
+{
+    qu_print_align(10, p_nd->p_pid, "; ");
+    qu_print_align(8,  p_nd->p_dst, "; ");
+    qu_print_align(20, p_nd->p_cmp, "; ");
+    qu_print_align(9,  p_nd->p_reg, "; ");
+    qu_print_align(20, p_nd->p_mdl, "; ");
+    
+    // Special case for printing the number of seats which is stored as int
+    char p_buf[5];
+    sprintf(p_buf, "%d", p_nd->nst);
+    char p_seats[5];
+    strcpy(p_seats, p_buf);
+    
+    qu_print_align(9,  p_seats,   "\n");
+
+    return;
+}
+
+// Print out first flight on the list
+void
+qu_print_flight(struct node *p_nd)
+{
+    printf("%s\t\t",    p_nd->p_pid);
+    printf("%s\t",      p_nd->p_dst);
+    printf("%s\t",      p_nd->p_cmp);
+    printf("%s\t\t",    p_nd->p_reg);
+
+    int mdl_chars = strlen(p_nd->p_mdl);
+    int mdl_lacks = (24 - mdl_chars);
+    printf("%s",        p_nd->p_mdl);
+    if (mdl_lacks > 0)
+    {
+        for (int m = mdl_lacks; m > 0; --m)
+        {
+            printf(" ");
+        }
+    }
+
+    printf("%d\n",      p_nd->nst);
+    return;
+}
+
+void
+qu_print_first(struct queue *p_qu)
+{
+    struct node *p_nd = p_qu->p_h;
+    if (p_nd == NULL)
+    {
+        printf("Fila vazia, sem avioes a decolar\n");
+        return;
+    }
+
+    qu_print_header();
+    qu_print_f_flight(p_nd);
+    return;
+}
+
+// Main-------------------------------------------------------------------------
 
 int
 main(void)
@@ -295,6 +404,9 @@ main(void)
             switch(p_in[0])
             {
                 case 'a': qu_new_flight(p_fq);
+                break;
+
+                case 'd': qu_print_first(p_fq);
                 break;
 
                 case 'q':

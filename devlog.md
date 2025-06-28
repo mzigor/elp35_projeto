@@ -12,7 +12,7 @@ o  ID do voo desejado);
 - [ ] 3 Remover nomes da lista de passageiros de um voo (o usuário deve informar o 
 ID do voo e nome desejado);
 
-- [ ] 4 Listar todas as características do primeiro avião da fila (exceto a lista 
+- [x] 2025-06-28 19:46 | 4 Listar todas as características do primeiro avião da fila (exceto a lista 
 de passageiros);
 
 - [ ] 5 Autorizar a decolagem do primeiro avião da fila (removendo-o da fila). Não 
