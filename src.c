@@ -6,6 +6,7 @@
 */
 
 #include <stdlib.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -23,27 +24,7 @@
 
 // User interaction-------------------------------------------------------------
 
-char *
-io_str_input(){
-    char *p_input = (char *)malloc(sizeof(char)*100);
-
-    fgets(p_input, (sizeof(p_input)), stdin);
-
-    // Finding out the received string's size
-    size_t len = strlen(p_input);
-
-    // Removing an eventual newline at the end of `p_input`
-    if (len > 0 && p_input[len - 1] == '\n') {
-        p_input[len - 1] = '\0';
-    }
-
-    // Cleaning up any remaining input in `stdin`
-    // int c;
-    // while ((c = getchar()) != '\n' && c != EOF){}
-
-    return p_input;
-}
-
+// Prints startup splash text
 void
 io_startup(void)
 {
@@ -58,6 +39,36 @@ io_startup(void)
     printf("\n");
 }
 
+char *
+io_str_input(){
+    int input_size = 100;
+    char *p_input = (char *)malloc(input_size);
+
+    fgets(p_input, input_size, stdin);
+
+    // Finding out the received string's size
+    size_t len = strlen(p_input);
+
+    // Removing an eventual newline at the end of `p_input`
+    if (len > 0 && p_input[len - 1] == '\n')
+    {
+        p_input[len - 1] = '\0';  // Remove newline
+    }
+    // Cleaning up possible remaining input in `stdin`, preventing overflow
+    else if (len == input_size - 1)
+    {
+        // Flush remaining input from stdin
+        int ch;
+        while ((ch = getchar()) != '\n' && ch != EOF)
+        {
+            // Do nothing, discard character
+        }
+    }
+
+    return p_input;
+}
+
+// Prints possible user actions
 void
 io_menu(void)
 {
@@ -70,8 +81,25 @@ io_menu(void)
     printf("f\tVerificar numero de avioes aguardando decolagem\n");
     printf("g\tListar todos os avioes aguardando decolagem\n");
     printf("h\tListar todos os passageiros de um voo\n");
-    printf("q\tSair do voo\n\n");
+    printf("q\tSair do programa\n\n");
     printf("> ");
+}
+
+// Checks if menu choice is valid (0 if valid, 1 if not)
+int io_menu_valid(char * p_in)
+{
+    if (   strcmp(p_in, "a") == 0
+        || strcmp(p_in, "b") == 0
+        || strcmp(p_in, "c") == 0 
+        || strcmp(p_in, "d") == 0
+        || strcmp(p_in, "e") == 0 
+        || strcmp(p_in, "f") == 0
+        || strcmp(p_in, "g") == 0 
+        || strcmp(p_in, "h") == 0
+        || strcmp(p_in, "q") == 0
+    ) {return 0;}
+    
+    else {return 1;}
 }
 
 // Binary tree functions--------------------------------------------------------
@@ -87,10 +115,9 @@ struct btree *
 bt_cr_leaf(char *p_name_new)
 {
     struct btree *p_new = malloc(sizeof(struct btree));
-    if (p_name_new == NULL)
+    if (p_new == NULL)
     {
         printf("\nSem memoria\n");
-        system("pause");
         exit(1);
     }
 
@@ -102,6 +129,7 @@ bt_cr_leaf(char *p_name_new)
     return p_new;
 }
 
+// Inserts a new element into the binary tree (or creates a new tree if empty)
 int
 bt_rec_insert(struct btree **p_root, char *p_name_new)
 {
@@ -135,20 +163,28 @@ struct node
 {
     struct node *p_nxt;   // Next element in queue
     char p_pid[8];        // Plane ID
-    char p_dst[4];        // Flight DesTiNation
-    char p_cmp[20];       // Flight CoMPany
-    char p_reg[9];        // Plane REGister
-    char p_mdl[20];       // Plane MoDeL
-    int  nst;             // Number os SeaTs
-    struct btree *p_pal;   // Pointer to the Passenger List
+    char p_dst[4];        // Flight destination
+    char p_cmp[20];       // Flight company
+    char p_reg[9];        // Plane register
+    char p_mdl[20];       // Plane model
+    int  nst;             // Number of seats
+    struct btree *p_pal;  // Pointer to the passenger list
 };
 
 struct queue
 {
-    struct node *p_h; // Pointer to queue Head
-    struct node *p_t; // Pointer to queue Tail
+    struct node *p_h; // Pointer to queue head
+    struct node *p_t; // Pointer to queue tail
 };
 
+// Sets all characters in an array to zero and null-terminates the array
+void qu_str_zero_null_term(char *p_arr, size_t size)
+{
+    memset(p_arr, '0', (size-1));
+    p_arr[(size-1)] = '\0';
+}
+
+// Creates a new node (i.e. a new plane) to form the queue
 struct node *
 qu_cr_node()
 {
@@ -156,41 +192,130 @@ qu_cr_node()
     if (p_new_nd == NULL)
     {
         printf("\nSem memoria\n");
-        system("pause");
         exit(1);
     }
 
     p_new_nd->p_nxt = NULL;
-    strcpy(p_new_nd->p_pid, "0000000");
-    strcpy(p_new_nd->p_dst, "000");
-    strcpy(p_new_nd->p_cmp, "0000000000000000000");
-    strcpy(p_new_nd->p_reg, "00000000");
-    strcpy(p_new_nd->p_mdl, "0000000000000000000");
+    // Setting all array characters to '0', putting null-terminating char at end
+    qu_str_zero_null_term(p_new_nd->p_pid, sizeof(p_new_nd->p_pid));
+    qu_str_zero_null_term(p_new_nd->p_dst, sizeof(p_new_nd->p_dst));
+    qu_str_zero_null_term(p_new_nd->p_cmp, sizeof(p_new_nd->p_cmp));
+    qu_str_zero_null_term(p_new_nd->p_reg, sizeof(p_new_nd->p_reg));
+    qu_str_zero_null_term(p_new_nd->p_mdl, sizeof(p_new_nd->p_mdl));
     p_new_nd->nst = 0;
     p_new_nd->p_pal = NULL;
 
-    return 0;
+    return p_new_nd;
 }
 
+void
+qu_fill_node(struct node * p_nd)
+{
+    printf("Qual o ID do voo?\n> ");
+    char *pid = io_str_input();
+    strcpy(p_nd->p_pid, pid);
+    free(pid);
+
+    printf("Qual o destino do voo?\n>");
+    char *dst = io_str_input();
+    strcpy(p_nd->p_dst, dst);
+    free(dst);
+
+    printf("Qual a empresa do voo?\n>");
+    char *cmp = io_str_input();
+    strcpy(p_nd->p_cmp, cmp);
+    free(cmp);
+
+    printf("Qual o registro do voo?\n>");
+    char *reg = io_str_input();
+    strcpy(p_nd->p_reg, reg);
+    free(reg);
+
+    printf("Qual o modelo do voo?\n>");
+    char *mdl = io_str_input();
+    strcpy(p_nd->p_mdl, mdl);
+    free(mdl);
+
+    p_nd->nst = 100;
+}
+
+// Stores queue's head and tail
 struct queue *
 qu_cr_queue()
 {
-    struct queue *p_new_qu = (struct queue *)calloc(1, sizeof(struct queue));
+    struct queue *p_new_qu = (struct queue *)malloc(sizeof(struct queue));
     if (p_new_qu == NULL)
     {
         printf("\nSem memoria\n");
         exit(1);
     }
 
+    p_new_qu->p_h = NULL;
+    p_new_qu->p_t = NULL;
+
     return p_new_qu;
+}
+
+// Flight specific functions----------------------------------------------------
+
+// Adds a new flight to the queue
+void
+qu_new_flight(struct queue * qu)
+{
+    printf("Registrando novo voo\n\n");
+    struct node * p_nf = qu_cr_node();
+    qu_fill_node(p_nf);
+
+    if (qu->p_h == NULL && qu->p_t == NULL)
+    {
+        qu->p_h = p_nf;
+        qu->p_t = p_nf;
+    }
+    else
+    {
+        qu->p_t->p_nxt = p_nf;
+        qu->p_t = p_nf;
+    }
 }
 
 int
 main(void)
 {
+    // Creates and initializes flight queue
+    struct queue *p_fq = qu_cr_queue();
+
     io_startup();
-    io_menu();
-    io_str_input();
+
+    while(1)
+    {
+        io_menu();
+        char *p_in = io_str_input();
+        if (io_menu_valid(p_in) == 0)
+        {
+            switch(p_in[0])
+            {
+                case 'a': qu_new_flight(p_fq);
+                break;
+
+                case 'q':
+                break;
+
+                default: printf("Funcao nao implementada\n");
+                break;
+            }
+
+            if (p_in[0] == 'q')
+            {
+                free(p_in);
+                break;
+            }
+        }
+        else
+        {
+            printf("Input invalido!\n");
+            free(p_in);
+        }
+    }
     // printf("Inicio do teste\n");
     // struct node teste;
 
@@ -210,5 +335,5 @@ main(void)
     // bt_rec_insert(&(teste.p_pal), n2);
     // bt_rec_insert(&(teste.p_pal), n1);
 
-    // return 0;
+    return 0;
 }
