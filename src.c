@@ -83,7 +83,7 @@ io_menu(void)
     printf("c\tRemover um passageiro de um voo\n");
     printf("d\tVer detalhes do proximo aviao a decolar\n");
     printf("e\tAutorizar o proximo aviao a decolar\n");
-    printf("f\tVerificar numero de avioes aguardando decolagem\n");
+    printf("f\tExibir numero de avioes aguardando decolagem\n");
     printf("g\tListar todos os avioes aguardando decolagem\n");
     printf("h\tListar todos os passageiros de um voo\n");
     printf("q\tSair do programa\n\n");
@@ -91,7 +91,8 @@ io_menu(void)
 }
 
 // Checks if menu choice is valid (0 if valid, 1 if not)
-int io_menu_valid(char *p_in)
+int
+io_menu_valid(char *p_in)
 {
     if (   
         strcmp(p_in, "a") == 0
@@ -106,6 +107,20 @@ int io_menu_valid(char *p_in)
     )
     {return 0;}
     
+    else
+    {return 1;}
+}
+
+// Checks if p_in is "s" (sim/yes, returns 0) or "n" (não/no, returns 1)
+int
+io_yes_no(char *p_in)
+{
+    if (   
+        strcmp(p_in, "s") == 0
+     || strcmp(p_in, "n") == 0
+    )
+    {return 0;}
+
     else
     {return 1;}
 }
@@ -165,6 +180,30 @@ bt_rec_insert(struct btree **p_root, char *p_name_new)
     }
 }
 
+// Destroys the entire binary tree
+void
+bt_destroy(struct btree *p_root)
+{
+    if (p_root == NULL)
+    {
+        return;
+    }
+
+    if (p_root->p_l != NULL)
+    {
+        bt_destroy(p_root->p_l);
+    }
+
+    if (p_root->p_r != NULL)
+    {
+        bt_destroy(p_root->p_r);
+    }
+    
+    free(p_root);
+
+    return;
+}
+
 // List functions---------------------------------------------------------------
 
 struct node
@@ -186,7 +225,8 @@ struct queue
 };
 
 // Sets all characters in an array to zero and null-terminates the array
-void qu_str_zero_null_term(char *p_arr, size_t size)
+void
+qu_str_zero_null_term(char *p_arr, size_t size)
 {
     memset(p_arr, '0', (size-1));
     p_arr[(size-1)] = '\0';
@@ -247,6 +287,23 @@ qu_fill_node(struct node *p_nd)
     p_nd->nst = 100;
 }
 
+// Deletes a single node/flight
+void
+qu_del_node(struct node *p_nd)
+{
+    // This is throwing an error, probably because these are not true pointers
+    // free(p_nd->p_mdl);
+    // free(p_nd->p_reg);
+    // free(p_nd->p_cmp);
+    // free(p_nd->p_dst);
+    // free(p_nd->p_pid);
+
+    bt_destroy(p_nd->p_pal);
+    free(p_nd);
+
+    return;
+}
+
 // Stores queue's head and tail
 struct queue *
 qu_cr_queue()
@@ -262,6 +319,34 @@ qu_cr_queue()
     p_new_qu->p_t = NULL;
 
     return p_new_qu;
+}
+
+// Delete the first node/flight from the queue
+int
+qu_del_first(struct queue *p_qu)
+{
+    if (p_qu->p_h == NULL)
+    {
+        return 1;
+    }
+
+    if (p_qu->p_h == p_qu->p_t)
+    {
+        qu_del_node(p_qu->p_h);
+
+        p_qu->p_h = NULL;
+        p_qu->p_t = NULL;
+
+        return 0;
+    }
+
+    struct node *p_aux = p_qu->p_h->p_nxt;
+
+    qu_del_node(p_qu->p_h);
+
+    p_qu->p_h = p_aux;
+
+    return 0;
 }
 
 // Flight specific functions----------------------------------------------------
@@ -313,7 +398,7 @@ qu_print_align(int n, char *p_s, char *p_f)
     return;
 }
 
-// Flight list printout header
+// Flight details header printout
 void
 qu_print_header(void)
 {
@@ -326,6 +411,7 @@ qu_print_header(void)
     return;
 }
 
+// Print flight details in aligned formatting
 void
 qu_print_f_flight(struct node *p_nd)
 {
@@ -335,7 +421,7 @@ qu_print_f_flight(struct node *p_nd)
     qu_print_align(9,  p_nd->p_reg, "; ");
     qu_print_align(20, p_nd->p_mdl, "; ");
     
-    // Special case for printing the number of seats which is stored as int
+    // Special treatment for seat count which is stored as int
     char p_buf[5];
     sprintf(p_buf, "%d", p_nd->nst);
     char p_seats[5];
@@ -346,30 +432,31 @@ qu_print_f_flight(struct node *p_nd)
     return;
 }
 
-// Print out first flight on the list
-void
-qu_print_flight(struct node *p_nd)
-{
-    printf("%s\t\t",    p_nd->p_pid);
-    printf("%s\t",      p_nd->p_dst);
-    printf("%s\t",      p_nd->p_cmp);
-    printf("%s\t\t",    p_nd->p_reg);
+// Print details of a single flight -- REMOVED, later adjust to simple csv print
+// void
+// qu_print_flight(struct node *p_nd)
+// {
+//     printf("%s\t\t",    p_nd->p_pid);
+//     printf("%s\t",      p_nd->p_dst);
+//     printf("%s\t",      p_nd->p_cmp);
+//     printf("%s\t\t",    p_nd->p_reg);
 
-    int mdl_chars = strlen(p_nd->p_mdl);
-    int mdl_lacks = (24 - mdl_chars);
-    printf("%s",        p_nd->p_mdl);
-    if (mdl_lacks > 0)
-    {
-        for (int m = mdl_lacks; m > 0; --m)
-        {
-            printf(" ");
-        }
-    }
+//     int mdl_chars = strlen(p_nd->p_mdl);
+//     int mdl_lacks = (24 - mdl_chars);
+//     printf("%s",        p_nd->p_mdl);
+//     if (mdl_lacks > 0)
+//     {
+//         for (int m = mdl_lacks; m > 0; --m)
+//         {
+//             printf(" ");
+//         }
+//     }
 
-    printf("%d\n",      p_nd->nst);
-    return;
-}
+//     printf("%d\n",      p_nd->nst);
+//     return;
+// }
 
+// Print first flight in queue
 void
 qu_print_first(struct queue *p_qu)
 {
@@ -383,6 +470,70 @@ qu_print_first(struct queue *p_qu)
     qu_print_header();
     qu_print_f_flight(p_nd);
     return;
+}
+
+// Print all flights in queue
+void
+qu_print_all(struct queue *p_qu)
+{
+    struct node *p_nd = p_qu->p_h;
+    if (p_nd == NULL)
+    {
+        printf("Fila vazia, sem avioes a decolar\n");
+        return;
+    }
+
+    qu_print_header();
+    struct node *p_aux = p_qu->p_h;
+    while(1)
+    {
+        qu_print_f_flight(p_aux);
+        if (p_aux->p_nxt == NULL) {break;}
+        else {p_aux = p_aux->p_nxt;}
+    }
+
+    return;
+}
+
+// Allows first flight in queue to fly, deleting its record
+void
+qu_allow_flight(struct queue *p_qu)
+{
+    if (p_qu->p_h == NULL)
+    {
+        printf("\nSem voos aguardando\n");
+        return;
+    }
+
+    printf("\nProximo voo:\n\n");
+    qu_print_first(p_qu);
+
+    while(1)
+    {
+        printf("\nPermitir decolagem? s/n > ");
+
+        char *p_in = io_str_input();
+
+        if (io_yes_no(p_in) == 0)
+        {
+            if (p_in[0] == 's')
+            {
+                qu_del_first(p_qu);
+                printf("Decolagem autorizada\n");
+                return;
+            }
+            else
+            {
+                printf("Decolagem nao autorizada\n");
+                return;
+            }
+        }
+        else
+        {
+            printf("Input invalido!\n");
+        }
+        free(p_in);
+    }
 }
 
 // Main-------------------------------------------------------------------------
@@ -409,6 +560,12 @@ main(void)
                 case 'd': qu_print_first(p_fq);
                 break;
 
+                case 'e': qu_allow_flight(p_fq);
+                break;
+
+                case 'g': qu_print_all(p_fq);
+                break;
+
                 case 'q':
                 break;
 
@@ -425,27 +582,10 @@ main(void)
         else
         {
             printf("Input invalido!\n");
-            free(p_in);
         }
+
+        free(p_in);
     }
-    // printf("Inicio do teste\n");
-    // struct node teste;
-
-    // teste.p_nxt = NULL;
-    // strcpy(teste.p_pid, "GLO1123");
-    // strcpy(teste.p_dst, "CGH");
-    // strcpy(teste.p_cmp, "GOL");
-    // strcpy(teste.p_reg, "PR-XMW");
-    // strcpy(teste.p_mdl, "Boeing 737-7K5");
-    // teste.nst = 138;
-    // teste.p_pal = NULL;
-
-    // char n1[] = "Igor";
-    // char n2[] = "Marina";
-
-    // bt_rec_insert(&(teste.p_pal), n1);
-    // bt_rec_insert(&(teste.p_pal), n2);
-    // bt_rec_insert(&(teste.p_pal), n1);
 
     return 0;
 }

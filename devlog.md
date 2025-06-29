@@ -15,7 +15,7 @@ ID do voo e nome desejado);
 - [x] 2025-06-28 19:46 | 4 Listar todas as características do primeiro avião da fila (exceto a lista 
 de passageiros);
 
-- [ ] 5 Autorizar a decolagem do primeiro avião da fila (removendo-o da fila). Não 
+- [x] 2025-06-29 01:18 | 5 Autorizar a decolagem do primeiro avião da fila (removendo-o da fila). Não 
 esquecer de remover também a lista de passageiros;
 
 - [ ] 6 Listar o número de aviões aguardando na fila de decolagem;
