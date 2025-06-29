@@ -291,14 +291,9 @@ qu_fill_node(struct node *p_nd)
 void
 qu_del_node(struct node *p_nd)
 {
-    // This is throwing an error, probably because these are not true pointers
-    // free(p_nd->p_mdl);
-    // free(p_nd->p_reg);
-    // free(p_nd->p_cmp);
-    // free(p_nd->p_dst);
-    // free(p_nd->p_pid);
-
+    // Passenger list must be specially destroyed/freed
     bt_destroy(p_nd->p_pal);
+    
     free(p_nd);
 
     return;
@@ -353,22 +348,58 @@ qu_del_first(struct queue *p_qu)
 
 // Adds a new flight to the queue
 void
-qu_new_flight(struct queue *qu)
+qu_new_flight(struct queue *p_qu)
 {
     printf("Registrando novo voo\n\n");
     struct node * p_nf = qu_cr_node();
     qu_fill_node(p_nf);
 
-    if (qu->p_h == NULL && qu->p_t == NULL)
+    if (p_qu->p_h == NULL && p_qu->p_t == NULL)
     {
-        qu->p_h = p_nf;
-        qu->p_t = p_nf;
+        p_qu->p_h = p_nf;
+        p_qu->p_t = p_nf;
     }
     else
     {
-        qu->p_t->p_nxt = p_nf;
-        qu->p_t = p_nf;
+        p_qu->p_t->p_nxt = p_nf;
+        p_qu->p_t = p_nf;
     }
+
+    return;
+}
+
+// Return an int with the number of nodes/flights in queue
+int
+qu_count(struct queue *p_qu)
+{
+    if (p_qu->p_h == NULL)
+    {
+        return 0;
+    }
+    else
+    {
+        int cnt = 0;
+        struct node *p_aux = p_qu->p_h;
+
+        do
+        {
+            ++cnt;
+            p_aux = p_aux->p_nxt;
+        } while (p_aux != NULL);
+
+        return cnt;
+    }
+}
+
+// Print message stating number of flights in queue
+void
+qu_print_count(struct queue *p_qu)
+{
+    int cnt = qu_count(p_qu);
+
+    printf("\nHa %d avioes aguardando para decolar\n", cnt);
+
+    return;
 }
 
 // Aligned print, ensuring aligned spaces and a final character at the end
@@ -402,6 +433,7 @@ qu_print_align(int n, char *p_s, char *p_f)
 void
 qu_print_header(void)
 {
+    printf("\n");
     qu_print_align(10, "ID do voo", "; ");
     qu_print_align(8,  "Destino",   "; ");
     qu_print_align(20, "Empresa",   "; ");
@@ -505,7 +537,7 @@ qu_allow_flight(struct queue *p_qu)
         return;
     }
 
-    printf("\nProximo voo:\n\n");
+    printf("\nProximo voo:\n");
     qu_print_first(p_qu);
 
     while(1)
@@ -561,6 +593,9 @@ main(void)
                 break;
 
                 case 'e': qu_allow_flight(p_fq);
+                break;
+
+                case 'f': qu_print_count(p_fq);
                 break;
 
                 case 'g': qu_print_all(p_fq);

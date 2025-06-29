@@ -18,7 +18,7 @@ de passageiros);
 - [x] 2025-06-29 01:18 | 5 Autorizar a decolagem do primeiro avião da fila (removendo-o da fila). Não 
 esquecer de remover também a lista de passageiros;
 
-- [ ] 6 Listar o número de aviões aguardando na fila de decolagem;
+- [x] 2025-06-29 02:31 | 6 Listar o número de aviões aguardando na fila de decolagem;
 
 - [x] 2025-06-29 01:52 | 7 Listar os dados de todos os aviões na fila de espera (um em cada linha da 
 tela, exceto a lista de passageiros), conforme modelo;
