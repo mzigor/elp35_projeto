@@ -26,7 +26,7 @@ tela, exceto a lista de passageiros), conforme modelo;
 - [ ] 8 Listar na tela os passageiros de um determinado voo em ordem alfabética e 
 informar no final a quantidade de passageiros no voo;
 
-- [ ] 9 Sair do programa (liberar a lista de passageiros e voos antes de finalizar).
+- [x] 2025-06-29 20:44 | 9 Sair do programa (liberar a lista de passageiros e voos antes de finalizar).
 
 
 ## Melhorias

@@ -256,6 +256,7 @@ qu_cr_node()
     return p_new_nd;
 }
 
+// Fills a node with information retrieved from the user
 void
 qu_fill_node(struct node *p_nd)
 {
@@ -344,6 +345,20 @@ qu_del_first(struct queue *p_qu)
     return 0;
 }
 
+// Destroys the entire queue, its nodes, and its nodes' binary trees
+void
+qu_destroy(struct queue *p_qu)
+{
+    do
+    {
+        qu_del_first(p_qu);
+    } while (p_qu->p_h != NULL);
+
+    free(p_qu);
+
+    p_qu = NULL;
+}
+
 // Flight specific functions----------------------------------------------------
 
 // Adds a new flight to the queue
@@ -381,6 +396,7 @@ qu_count(struct queue *p_qu)
         int cnt = 0;
         struct node *p_aux = p_qu->p_h;
 
+        // Do-while ensuring at least one flight is counted
         do
         {
             ++cnt;
@@ -397,7 +413,7 @@ qu_print_count(struct queue *p_qu)
 {
     int cnt = qu_count(p_qu);
 
-    printf("\nHa %d avioes aguardando para decolar\n", cnt);
+    printf("Ha %d avioes aguardando para decolar\n", cnt);
 
     return;
 }
@@ -433,7 +449,7 @@ qu_print_align(int n, char *p_s, char *p_f)
 void
 qu_print_header(void)
 {
-    printf("\n");
+    // printf("\n");
     qu_print_align(10, "ID do voo", "; ");
     qu_print_align(8,  "Destino",   "; ");
     qu_print_align(20, "Empresa",   "; ");
@@ -533,11 +549,11 @@ qu_allow_flight(struct queue *p_qu)
 {
     if (p_qu->p_h == NULL)
     {
-        printf("\nSem voos aguardando\n");
+        printf("Sem voos aguardando\n");
         return;
     }
 
-    printf("\nProximo voo:\n");
+    printf("Proximo voo:\n\n");
     qu_print_first(p_qu);
 
     while(1)
@@ -621,6 +637,8 @@ main(void)
 
         free(p_in);
     }
+
+    qu_destroy(p_fq);
 
     return 0;
 }
