@@ -20,7 +20,7 @@ esquecer de remover também a lista de passageiros;
 
 - [ ] 6 Listar o número de aviões aguardando na fila de decolagem;
 
-- [ ] 7 Listar os dados de todos os aviões na fila de espera (um em cada linha da 
+- [x] 2025-06-29 01:52 | 7 Listar os dados de todos os aviões na fila de espera (um em cada linha da 
 tela, exceto a lista de passageiros), conforme modelo;
 
 - [ ] 8 Listar na tela os passageiros de um determinado voo em ordem alfabética e 
