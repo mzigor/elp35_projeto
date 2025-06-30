@@ -37,3 +37,8 @@ informar no final a quantidade de passageiros no voo;
 - [ ] Oferecer opções fixas para compania, modelo, destino do voo
 - [ ] Atribuir número de registro com base na compania
 - [ ] Atribuir número de assentos com base no modelo do avião
+
+
+### Item 2 `Cadastrar nomes…`
+
+- [ ] Impedir mais passageiros do que assentos por voo

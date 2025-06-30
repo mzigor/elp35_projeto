@@ -181,6 +181,37 @@ bt_rec_insert(struct btree **pp_root, char *p_name_new)
     }
 }
 
+// Inserts an existant node into the binary tree
+int
+bt_rec_insert_exs(struct btree **pp_root, struct btree **pp_new)
+{
+    if (*pp_root == NULL)
+    {
+        *pp_root = *pp_new;
+        return 0;
+    }
+    else
+    {
+        int cmp = strcmp((*pp_root)->p_name, (*pp_new)->p_name);
+
+        if (cmp == 0)
+        {
+            printf("Nome ja inserido\n");
+            return 1;
+        }
+        else if (cmp < 0)
+        {
+            int ret = bt_rec_insert_exs(&((*pp_root)->p_l), pp_new);
+            return ret;
+        }
+        else if (cmp > 0)
+        {
+            int ret = bt_rec_insert_exs(&((*pp_root)->p_r), pp_new);
+            return ret;
+        }
+    }
+}
+
 // Asks for a new passenger name and inserts it into the binary tree, returns 0
 // if successful, returns 1 if not successful (based on bt_rec_insert())
 int
@@ -194,6 +225,154 @@ bt_fill_name(struct btree **pp_root)
     free(p_in);
 
     return ret;
+}
+
+// Prints the names of all passengers in flight
+int
+bt_print_names_inord(struct btree *p_root)
+{
+    if (p_root == NULL)
+    {
+        return 0;
+    }
+    
+    bt_print_names_inord(p_root->p_l);
+    printf("%s;\n", p_root->p_name);
+    bt_print_names_inord(p_root->p_r);
+
+    return 0;
+}
+
+// Returns count of passengers in flight as int
+int
+bt_count(struct btree *p_root)
+{
+    int cnt = 0;
+
+    if (p_root == NULL)
+    {
+        return cnt;
+    }
+
+    ++cnt;
+
+    return (bt_count(p_root->p_l) + bt_count(p_root->p_r) + cnt);
+}
+
+int
+bt_pretty_print(struct btree *p_root)
+{
+    printf("\nLista de passageiros;\n");
+    bt_print_names_inord(p_root);
+
+    printf("\nHa %d passageiros no voo\n", bt_count(p_root));
+    return 0;
+}
+
+// Recursively searches for a given name. Returns pointer-to-pointer to node if
+// name is found, NULL otherwise
+struct btree **
+bt_search_node(struct btree **pp_root, char *p_sch)
+{
+    if ((*pp_root)->p_name == NULL)
+    {
+        return NULL;
+    }
+
+    int cmp = strcmp((*pp_root)->p_name, p_sch);
+
+    if (cmp == 0)
+    {
+        return pp_root;
+    }
+    else if (cmp < 0)
+    {
+        struct btree **pp_l_res;
+        pp_l_res = bt_search_node(&((*pp_root)->p_l), p_sch);
+        return pp_l_res;
+    }
+    else
+    {
+        struct btree **pp_r_res;
+        pp_r_res = bt_search_node(&((*pp_root)->p_r), p_sch);
+        return pp_r_res;
+    }
+}
+
+// Deletes a given node
+int
+bt_del_node(struct btree **pp_root)
+{
+    // Node is NULL
+    if (*pp_root == NULL)
+    {
+        return 0;
+    }
+    else
+    {
+        // Node has no children
+        if ((*pp_root)->p_l == NULL && (*pp_root)->p_r == NULL)
+        {
+            free(*pp_root);
+            *pp_root = NULL;
+            return 0;
+        }
+        // Node has left child only
+        else if ((*pp_root)->p_l != NULL && (*pp_root)->p_r == NULL)
+        {
+            strcpy((*pp_root)->p_name, (*pp_root)->p_l->p_name);
+            return bt_del_node(&((*pp_root)->p_l));
+        }
+        // Node has right child only
+        else if ((*pp_root)->p_l == NULL && (*pp_root)->p_r != NULL)
+        {
+            strcpy((*pp_root)->p_name, (*pp_root)->p_r->p_name);
+            return bt_del_node(&((*pp_root)->p_r));
+        }
+        // Node has both children
+        else if ((*pp_root)->p_l != NULL && (*pp_root)->p_r != NULL)
+        {
+            struct btree **pp_l_max = &((*pp_root)->p_l);
+            while ((*pp_l_max)->p_r != NULL)
+            {
+                pp_l_max = &((*pp_l_max)->p_r);
+            }
+
+            strcpy((*pp_root)->p_name, (*pp_l_max)->p_name);
+            return bt_del_node(pp_l_max);
+        }
+        else
+        {
+            return 1;
+        }
+    }
+}
+
+// Deletes node containing given name
+int
+bt_del_by_name(struct btree **pp_root, char *p_sch)
+{
+    struct btree **p_sch_res = bt_search_node(pp_root, p_sch);
+
+    if (p_sch_res == NULL)
+    {
+        printf("Nome nao encontrado\n");
+        return 1;
+    }
+    else
+    {
+        int d = bt_del_node(p_sch_res);
+
+        if (d == 0)
+        {
+            printf("Passageiro removido\n");
+        }
+        else
+        {
+            printf("Remocao malsucedida");
+        }
+        return d;
+    }
 }
 
 // Destroys the entire binary tree
@@ -396,7 +575,7 @@ qu_destroy(struct queue *p_qu)
 
     free(p_qu);
 
-    p_qu = NULL;
+    return;
 }
 
 // Flight specific functions----------------------------------------------------
@@ -608,19 +787,21 @@ qu_allow_flight(struct queue *p_qu)
             {
                 qu_del_first(p_qu);
                 printf("Decolagem autorizada\n");
+                free(p_in);
                 return;
             }
             else
             {
                 printf("Decolagem nao autorizada\n");
+                free(p_in);
                 return;
             }
         }
         else
         {
             printf("Input invalido!\n");
+            free(p_in);
         }
-        free(p_in);
     }
 }
 
@@ -631,19 +812,43 @@ fl_new_pass(struct queue *p_qu)
     printf("Iniciando cadastro de novo passageiro\n");
     printf("Qual o ID do voo do novo passageiro? > ");
 
-    char *p_in_flt = io_str_input();
+    char *p_in = io_str_input();
 
-    struct node *p_res = qu_search_node_id(p_qu, p_in_flt);
+    struct node *p_res = qu_search_node_id(p_qu, p_in);
 
     if (p_res == NULL)
     {
         printf("Voo nao encontrado\n");
+        free(p_in);
         return 1;
     }
 
     int ins = bt_fill_name(&(p_res->p_pal));
 
+    free(p_in);
     return ins;
+}
+
+// Print all passengers from given flight specified by user, returns 0 if
+// successful, 1 otherwise
+int
+fl_list_pass(struct queue *p_qu)
+{
+    printf("Conferir a lista de passageiros do voo com ID > ");
+
+    char *p_in = io_str_input();
+
+    struct node *p_nd = qu_search_node_id(p_qu, p_in);
+
+    if (p_nd == NULL)
+    {
+        printf("Voo nao encontrado\n");
+        free(p_in);
+        return 1;
+    }
+
+    bt_pretty_print(p_nd->p_pal);
+    return 0;
 }
 
 // Main-------------------------------------------------------------------------
@@ -682,6 +887,9 @@ main(void)
                 case 'g': qu_print_all(p_fq);
                 break;
 
+                case 'h': fl_list_pass(p_fq);
+                break;
+
                 case 'q':
                 break;
 
@@ -704,6 +912,7 @@ main(void)
     }
 
     qu_destroy(p_fq);
+    p_fq = NULL;
 
     return 0;
 }
