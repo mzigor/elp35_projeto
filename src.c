@@ -152,25 +152,26 @@ bt_cr_leaf(char *p_name_new)
     return p_new;
 }
 
-// Inserts a new element into the binary tree (or creates a new tree if empty)
+// Inserts a new element into the binary tree (or creates a new tree if empty),
+// returns 0 if successful, 1 otherwise
 int
-bt_rec_insert(struct btree **p_root, char *p_name_new)
+bt_rec_insert(struct btree **pp_root, char *p_name_new)
 {
-    // First node ever
-    if (*p_root == NULL)
+    // Found NULL node, create new leaf and return 0
+    if (*pp_root == NULL)
     {
-        *p_root = bt_cr_leaf(p_name_new);
+        *pp_root = bt_cr_leaf(p_name_new);
         return 0;
     }
     // Recursive insert to LEFT if new name comes BEFORE name in root
-    else if (strcmp((*p_root)->p_name, p_name_new) > 0)
+    else if (strcmp((*pp_root)->p_name, p_name_new) > 0)
     {
-        return bt_rec_insert(&((*p_root)->p_l), p_name_new);
+        return bt_rec_insert(&((*pp_root)->p_l), p_name_new);
     }
     // Recursive insert to RIGHT if new name comes AFTER name in root
-    else if (strcmp((*p_root)->p_name, p_name_new) < 0)
+    else if (strcmp((*pp_root)->p_name, p_name_new) < 0)
     {
-        return bt_rec_insert(&((*p_root)->p_r), p_name_new);
+        return bt_rec_insert(&((*pp_root)->p_r), p_name_new);
     }
     // Print to screen if name to be inserted already exists, return 1
     else
@@ -178,6 +179,21 @@ bt_rec_insert(struct btree **p_root, char *p_name_new)
         printf("Nome ja inserido\n");
         return 1;
     }
+}
+
+// Asks for a new passenger name and inserts it into the binary tree, returns 0
+// if successful, returns 1 if not successful (based on bt_rec_insert())
+int
+bt_fill_name(struct btree **pp_root)
+{
+    printf("Qual o nome do novo passageiro? > ");
+    char *p_in = io_str_input();
+
+    int ret = bt_rec_insert(pp_root, p_in);
+
+    free(p_in);
+
+    return ret;
 }
 
 // Destroys the entire binary tree
@@ -315,6 +331,30 @@ qu_cr_queue()
     p_new_qu->p_t = NULL;
 
     return p_new_qu;
+}
+
+// Searches for a specific node by its flight id p_id, returns pointer to the
+// node if successful, NULL otherwise
+struct node *
+qu_search_node_id(struct queue *p_qu, char *p_id)
+{
+    if (p_qu->p_h == NULL)
+    {
+        return NULL;
+    }
+
+    struct node *p_aux = p_qu->p_h;
+    do
+    {
+        if (strcmp(p_id, p_aux->p_pid) == 0)
+        {
+            return p_aux;
+        }
+
+        p_aux = p_aux->p_nxt;
+    } while (p_aux != NULL);
+    
+    return NULL;
 }
 
 // Delete the first node/flight from the queue
@@ -584,6 +624,28 @@ qu_allow_flight(struct queue *p_qu)
     }
 }
 
+// Register new passenger to specific flight
+int
+fl_new_pass(struct queue *p_qu)
+{
+    printf("Iniciando cadastro de novo passageiro\n");
+    printf("Qual o ID do voo do novo passageiro? > ");
+
+    char *p_in_flt = io_str_input();
+
+    struct node *p_res = qu_search_node_id(p_qu, p_in_flt);
+
+    if (p_res == NULL)
+    {
+        printf("Voo nao encontrado\n");
+        return 1;
+    }
+
+    int ins = bt_fill_name(&(p_res->p_pal));
+
+    return ins;
+}
+
 // Main-------------------------------------------------------------------------
 
 int
@@ -603,6 +665,9 @@ main(void)
             switch(p_in[0])
             {
                 case 'a': qu_new_flight(p_fq);
+                break;
+
+                case 'b': fl_new_pass(p_fq);
                 break;
 
                 case 'd': qu_print_first(p_fq);

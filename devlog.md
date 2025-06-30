@@ -6,7 +6,7 @@ Preciso desenvolver as seguintes funcionalidades:
 
 - [x] 2025-06-28 15:52 | 1 Cadastrar voos na fila de espera;
 
-- [ ] 2 Cadastrar nomes na lista de passageiros de um voo (o usuário deve informar 
+- [x] 2025-06-29 21:48 | 2 Cadastrar nomes na lista de passageiros de um voo (o usuário deve informar 
 o  ID do voo desejado);
 
 - [ ] 3 Remover nomes da lista de passageiros de um voo (o usuário deve informar o 
