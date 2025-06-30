@@ -9,7 +9,7 @@ Preciso desenvolver as seguintes funcionalidades:
 - [x] 2025-06-29 21:48 | 2 Cadastrar nomes na lista de passageiros de um voo (o usuário deve informar 
 o  ID do voo desejado);
 
-- [ ] 3 Remover nomes da lista de passageiros de um voo (o usuário deve informar o 
+- [x] 2025-06-30 03:55 | 3 Remover nomes da lista de passageiros de um voo (o usuário deve informar o 
 ID do voo e nome desejado);
 
 - [x] 2025-06-28 19:46 | 4 Listar todas as características do primeiro avião da fila (exceto a lista 
@@ -23,7 +23,7 @@ esquecer de remover também a lista de passageiros;
 - [x] 2025-06-29 01:52 | 7 Listar os dados de todos os aviões na fila de espera (um em cada linha da 
 tela, exceto a lista de passageiros), conforme modelo;
 
-- [ ] 8 Listar na tela os passageiros de um determinado voo em ordem alfabética e 
+- [x] 2025-06-30 03:22 | 8 Listar na tela os passageiros de um determinado voo em ordem alfabética e 
 informar no final a quantidade de passageiros no voo;
 
 - [x] 2025-06-29 20:44 | 9 Sair do programa (liberar a lista de passageiros e voos antes de finalizar).

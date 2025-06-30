@@ -181,37 +181,6 @@ bt_rec_insert(struct btree **pp_root, char *p_name_new)
     }
 }
 
-// Inserts an existant node into the binary tree
-int
-bt_rec_insert_exs(struct btree **pp_root, struct btree **pp_new)
-{
-    if (*pp_root == NULL)
-    {
-        *pp_root = *pp_new;
-        return 0;
-    }
-    else
-    {
-        int cmp = strcmp((*pp_root)->p_name, (*pp_new)->p_name);
-
-        if (cmp == 0)
-        {
-            printf("Nome ja inserido\n");
-            return 1;
-        }
-        else if (cmp < 0)
-        {
-            int ret = bt_rec_insert_exs(&((*pp_root)->p_l), pp_new);
-            return ret;
-        }
-        else if (cmp > 0)
-        {
-            int ret = bt_rec_insert_exs(&((*pp_root)->p_r), pp_new);
-            return ret;
-        }
-    }
-}
-
 // Asks for a new passenger name and inserts it into the binary tree, returns 0
 // if successful, returns 1 if not successful (based on bt_rec_insert())
 int
@@ -285,7 +254,7 @@ bt_search_node(struct btree **pp_root, char *p_sch)
     {
         return pp_root;
     }
-    else if (cmp < 0)
+    else if (cmp > 0)
     {
         struct btree **pp_l_res;
         pp_l_res = bt_search_node(&((*pp_root)->p_l), p_sch);
@@ -699,30 +668,6 @@ qu_print_f_flight(struct node *p_nd)
     return;
 }
 
-// Print details of a single flight -- REMOVED, later adjust to simple csv print
-// void
-// qu_print_flight(struct node *p_nd)
-// {
-//     printf("%s\t\t",    p_nd->p_pid);
-//     printf("%s\t",      p_nd->p_dst);
-//     printf("%s\t",      p_nd->p_cmp);
-//     printf("%s\t\t",    p_nd->p_reg);
-
-//     int mdl_chars = strlen(p_nd->p_mdl);
-//     int mdl_lacks = (24 - mdl_chars);
-//     printf("%s",        p_nd->p_mdl);
-//     if (mdl_lacks > 0)
-//     {
-//         for (int m = mdl_lacks; m > 0; --m)
-//         {
-//             printf(" ");
-//         }
-//     }
-
-//     printf("%d\n",      p_nd->nst);
-//     return;
-// }
-
 // Print first flight in queue
 void
 qu_print_first(struct queue *p_qu)
@@ -851,6 +796,29 @@ fl_list_pass(struct queue *p_qu)
     return 0;
 }
 
+int
+fl_remove_pass(struct queue *p_qu)
+{
+    printf("Iniciando remocao de passageiro\n");
+    printf("Qual o ID do voo do passageiro? > ");
+
+    char *p_in = io_str_input();
+
+    struct node *p_res = qu_search_node_id(p_qu, p_in);
+
+    if (p_res == NULL)
+    {
+        printf("Voo nao encontrado\n");
+        free(p_in);
+        return 1;
+    }
+
+    printf("Qual o nome do passageiro? > ");
+    char *p_ps = io_str_input();
+
+    return bt_del_by_name(&(p_res->p_pal), p_ps);
+}
+
 // Main-------------------------------------------------------------------------
 
 int
@@ -873,6 +841,9 @@ main(void)
                 break;
 
                 case 'b': fl_new_pass(p_fq);
+                break;
+
+                case 'c': fl_remove_pass(p_fq);
                 break;
 
                 case 'd': qu_print_first(p_fq);
