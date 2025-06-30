@@ -42,3 +42,9 @@ informar no final a quantidade de passageiros no voo;
 ### Item 2 `Cadastrar nomes…`
 
 - [ ] Impedir mais passageiros do que assentos por voo
+
+
+## Github
+
+- [ ] Garantir que o repositório no Github está seguro e apenas eu posso
+contribuir
